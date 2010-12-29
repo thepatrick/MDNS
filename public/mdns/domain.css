@@ -1,0 +1,16 @@
+/* @override http://localhost:8080/static/mdns/domain.css */
+#domain-publish {
+	float: right;
+}
+
+#domain-servers {
+	float: right;
+	font-size: 0.8em;
+	text-align: right;
+}
+
+.domain-warning {
+	border: 1px solid #999;
+	padding: 10px 10px 7px;
+	background-color: #e7b5b6;
+}

@@ -1,0 +1,376 @@
+/* @override 
+	http://localhost:8080/static/mdns/mdns.css
+*/
+
+
+html {
+	margin: 0;
+/* setting border: 0 hoses ie6 win window inner well border */
+	padding: 0;
+	height: 100%;
+}
+
+body {
+	font: 62.5% "lucida grande", Tahoma, Verdana, Arial, Helvetica, sans-serif; /* Resets 1em to 10px */
+	color: #222 !important;
+	background: #FFF url(chrome.png);
+	text-align: left;
+	margin: 0 0 30px;
+	overflow: hidden;
+	z-index: 1;
+}
+
+img {
+	border: none;
+}
+
+a {
+	outline: 0;
+	-moz-outline: none;
+}
+
+#loading {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -20px;
+	margin-left: -150px;
+	width: 300px;
+	height: 20px;
+	padding: 10px;
+	border: 1px solid #444;
+	background-color: #fff;
+	text-align: center;	
+}
+
+h1 {
+	font-weight: normal;
+	margin-bottom: 0;
+	
+	font: normal 32px/48px "Myriad Web", "Myriad Pro", "Gill Sans", "Gill Sans MT", "Lucida Grande", "Lucida Sans", "Trebuchet MS", "Bitstream Vera Sans", Verdana, Helvetica, sans-serif;
+}
+h1 span {
+	font-size: 60%;
+	color: #666;
+	font-weight: normal;
+}
+#signinBox {
+	top: 0; 
+	right: 0; 
+	text-align: right;
+	padding: 13px 20px;
+	color: #000;
+	height: 13px;
+	border-bottom: 1px solid #444;
+	
+}
+#signinBox a {
+	color: #444;
+}
+
+#appVersion {
+	float: left;
+	font-weight: bold;
+}
+
+#sidebar {/*blurred: DFE1E3*/
+	background: #D2DAE4;
+	color: #111;
+	padding: 0 0;
+	margin: 0;
+	font-size: 1.15em;
+	line-height:1.7em;
+	border-top: 1px solid #eee;
+	border-right: 1px solid #ddd;
+	position: fixed;
+	top: 40px;
+	left: 0;
+	bottom: 22px;
+	width: 199px;
+}
+
+#sidebar > ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 23px;
+	overflow: auto;
+}
+
+#sidebar li {
+	font-size: 0.9em;
+	padding-left: 20px;
+	cursor: default;
+	line-height: 2.0em;
+	margin-bottom: 3px;
+}
+
+#sidebar li.title {
+	color: #4B5E6E;
+	text-transform: uppercase;
+	padding: 2px 8px;
+	font-size: 0.85em;
+	font-weight: bold;
+	text-shadow: 1px 1px #ffffff;
+}
+
+#sidebar .selected {
+	background-color: red;
+	background: url(chrome.png) repeat-x left -181px;
+}
+
+#sidebar #toolbar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 23px;
+	background: url(chrome.png) repeat-x -32px -120px;
+	border-top: 1px solid #eee;
+}
+
+#sidebar #toolbar #toolbar-add {
+	background: red;
+	background: url(chrome.png) repeat-x left -98px;
+	width: 31px;
+	height: 23px;
+	float: left;
+	cursor: default;
+}
+
+#sidebar #toolbar #toolbar-add:active {
+	background: url(chrome.png) repeat-x -32px -98px;
+}
+#page {/*DFE1E3*/
+	background: #fafafa;
+	color: #111;
+	padding: 0;
+	margin: 0;
+	font-size: 1.15em;
+	line-height:1.7em;
+	border-top: 1px solid #eee;
+	position: fixed;
+	top: 40px;
+	left: 200px;
+	right: 0;
+	bottom: 22px;
+	overflow: auto;
+}
+
+#page a {
+	color: #175726;
+}
+
+#footer {
+	color: #222;
+	padding: 5px 6px 0px;
+	text-align: left;
+	background-color: #eee;
+	font-size: 0.9em;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 17px;
+	border-top: 1px solid #444;
+	background: url(chrome.png) repeat-x left -75px;
+}
+
+#footer p {
+	margin: 0;
+}
+
+#new-domain {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+#new-domain label {
+	display: block;
+}
+#new-domain .box input {
+	width:  400px;
+	padding:  5px;
+	font-size: 1.4em;
+}
+
+#edit-domain h1 {
+	color: #626a72;
+	font-size: 1.4em;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+#edit-domain-one {
+	background-color: #fff;
+	padding: 0 20px 20px;
+}
+
+#edit-domain-one-details {
+	width: 500px;
+}
+
+#edit-domain-one-details div {
+	width: 100%;
+	overflow: hidden;
+}
+
+#edit-domain-one-details div .label {
+	display: block;
+	float: left;
+	width: 150px;
+	text-align: right;
+	font-weight: bold;
+	padding-right: 10px;
+}
+
+#edit-domain-one-details div .detail {
+	display: block;
+	margin-left: 10px;
+	float: left;
+}
+
+#edit-domain-one-details div input {
+	float: right;
+	margin-top: 2px;
+	margin-right: 2px;
+}
+
+#edit-domain-two {
+	background-color: #e5e5e5;
+	padding: 0 20px 20px;
+}
+
+.box {
+	background-color: #fff;
+	margin: 70px 30px 20px;
+	padding: 30px;
+	border: 1px solid #999;
+	-webkit-border-radius: 0.5em;
+}
+.box-buttons {
+	margin: 20px 30px 10px;
+	text-align: right;
+	padding-right: 20px;
+}
+.box-buttons input {
+	margin-left: 10px;
+}
+#edit-domain-two table {
+	margin:0 !important;
+}
+#edit-domain-records-table tr td {
+	background-color: #fff;
+	border-bottom: 0;
+}
+
+#edit-domain-records-table td.record-commands {
+	width:  110px;
+	text-align: right;
+}
+
+
+#edit-domain-records-table td.record-resource_type {
+	width:  50px;
+	text-align: left;
+	font-size: 0.9em;
+}
+#edit-domain-records-table td.record-priority,
+#edit-domain-records-table td.record-weight,
+#edit-domain-records-table td.record-port {
+	width:  30px;
+	text-align: right;
+	font-size: 0.9em;
+}
+
+#edit-domain-two tr.add td {
+	background-color: #e5e5e5;
+	border-top: 1px solid;
+	border-color: #444;
+	border-bottom: 0;
+}
+
+#edit-domain-record-edit {
+	width: 350px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -80px;
+	margin-left: -175px;
+}
+
+#footer a {
+	color: #333;
+}
+
+h2 {
+	margin-bottom: 10px;
+	border-bottom: 1px solid #eee;
+}
+
+table {
+	border-collapse: collapse;
+	margin: 10px 0;
+}
+
+table th {
+	border-bottom: 1px solid #444;
+	text-align: left;
+	padding: 2px 8px;
+}
+
+table td {
+	text-align: left;
+	padding: 2px 8px;
+	background-color: #eee;
+	border-bottom: 1px solid#888;
+}
+.formRowButtons {
+	width: 100%;
+	overflow: hidden;
+	padding: 40px 0 0;	
+	text-align: right;
+}
+
+.formRow {
+	width: 100%;
+	overflow: hidden;
+	padding: 2px 0;
+}
+.formRow label {
+	width: 100px;
+	display: block;
+	float: left;
+	text-align: right;
+	padding-right: 10px;
+}
+.formRow input {
+	font-size: 1.0em;
+	padding: 0.1em;
+}
+.formRow textarea {
+	font-size: 0.7em;
+	padding: 0.1em;
+	height: 120px;
+}
+
+input[type=button] {
+	border-top: 1px solid #31363e;
+	border-left: 1px solid #2a2d34;
+	border-right: 1px solid #373c45;
+	border-bottom: 1px solid #3a3f47;
+	-webkit-border-radius: 3px;
+	background: url(chrome.png) repeat-x left -141px;
+	height: 20px;
+	padding: 0 8px;	
+}
+input[type=button]:active {
+	background: url(chrome.png) repeat-x left -161px;
+}
