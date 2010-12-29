@@ -136,29 +136,34 @@ var dxClient = {
 			dxClient.apiCall('rw/domains/' + d.id, {
 				method: 'get',
 				onApiSuccess: function(r, t) {
-					
 					this.selectedDomain = r;
-					this.selectedDomainRecords = []; //r.records;
-					this.selectedRecord = null;
-					
-					$('edit-domain-h1-name').update(this.selectedDomain.fqdn);
-					$('edit-domain-detail-name').update(this.selectedDomain.fqdn);
-					$('edit-domain-detail-version').update(this.selectedDomain.version);
-					
-					if(this.selectedDomain.active) {
-						$('edit-domain-publish').show();
-						$('edit-domain-detail-servers-group').show();		
-						$('edit-domain-detail-warning').hide();				
-					} else {
-						$('edit-domain-publish').hide();
-						$('edit-domain-detail-servers-group').hide();
-						$('edit-domain-detail-warning').show();
-					}
-					
-					this.refreshRecordList();
-					
-					$('loading').hide();
-					$('edit-domain').show();
+					dxClient.apiCall('rw/domains/' + d.id + '/records', {
+						method: 'get',
+						onApiSuccess: function(r,t) {
+							this.selectedDomainRecords = r; //r.records;
+							this.selectedRecord = null;
+
+							$('edit-domain-h1-name').update(this.selectedDomain.fqdn);
+							$('edit-domain-detail-name').update(this.selectedDomain.fqdn);
+							$('edit-domain-detail-version').update(this.selectedDomain.version);
+
+							if(this.selectedDomain.active) {
+								$('edit-domain-publish').show();
+								$('edit-domain-detail-servers-group').show();		
+								$('edit-domain-detail-warning').hide();				
+							} else {
+								$('edit-domain-publish').hide();
+								$('edit-domain-detail-servers-group').hide();
+								$('edit-domain-detail-warning').show();
+							}
+
+							this.refreshRecordList();
+
+							$('loading').hide();
+							$('edit-domain').show();
+							
+						}.bind(this)
+					});
 				}.bind(this)
 			});
 			
@@ -213,10 +218,10 @@ var dxClient = {
 		
 		deleteRecord: function(id) {
 			$('loading').show();
-			toDelete = this.selectedDomainRecords[id];
-			dxClient.apiCall('record.destroy',{
+			var toDelete = this.selectedDomainRecords[id];
+			dxClient.apiCall('rw/domains/'+ toDelete.domain_id + "/records/" + toDelete.id,{
 				method: 'post',
-				parameters: {'id': toDelete.id},
+				parameters: {'_method': 'delete'},
 				onApiSuccess: function(r, t) {
 					$('loading').hide();
 					this.selectedDomainRecords = this.selectedDomainRecords.without(toDelete);
@@ -240,18 +245,19 @@ var dxClient = {
 		},
 		
 		saveRecord: function() {
-				r = this.selectedRecord;
+				var r = this.selectedRecord, params = { '_method': 'put' };
 				Object.keys(r).each(function(k){
 					if($('edit-domain-record-edit-' + k)) {
+						params['record[' + k + ']'] = $('edit-domain-record-edit-' + k).value;
 						r[k] = $('edit-domain-record-edit-' + k).value;
 					}
 				});
 								
 				$('loading').show();
 
-				dxClient.apiCall('record.modify', {
+				dxClient.apiCall('rw/domains/' + r.domain_id + '/records/' + r.id, {
 					method: 'post',
-					parameters: this.selectedRecord,
+					parameters: params,
 					onApiSuccess: function(r, t) {
 						$('loading').hide();
 						this.refreshRecordList();			
@@ -275,21 +281,21 @@ var dxClient = {
 		},
 		
 		saveNewRecord: function() {
-			r = {'domain': this.selectedDomain.id}
+			var r = {};
 			$w('name resource_type priority weight port target').each(function(k){
 				if($('edit-domain-record-edit-' + k)) {
-					r[k] = $('edit-domain-record-edit-' + k).value;
+					r['record[' + k + ']'] = $('edit-domain-record-edit-' + k).value;
 				}
 			});
 
 			$('loading').show();
 
-			dxClient.apiCall('record.create', {
+			dxClient.apiCall('rw/domains/' + this.selectedDomain.id + '/records', {
 				method: 'post',
 				parameters: r,
 				onApiSuccess: function(r, t) {
 					$('loading').hide();
-					this.selectedDomainRecords.push(r.record);
+					this.selectedDomainRecords.push(r);
 					this.refreshRecordList();			
 					this.cancelRecord();
 				}.bind(this)

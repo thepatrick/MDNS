@@ -12,7 +12,7 @@ class RecordsController < ApplicationController
   def index
     respond_with(@records = @domain.records.all)
   end
-  q
+  
   def show
     respond_with(@record = @domain.records.find(params[:id]))
   end
@@ -20,31 +20,25 @@ class RecordsController < ApplicationController
   def create
     @record = @domain.records.build(params[:record])
     if @record.save
-      respond_with @record, :status => :created, :location => @record
+      respond_with @record, :status => :created, :location => domain_record_path(@domain, @record)
     else
       respond_with @record.errors, :status => :unprocessable_entity
     end
   end
   
-  # def update
-  #   @domain = current_user.domains.find(params[:id])
-  #   if @domain.update_attributes(params[:d])
-  #     head :ok
-  #   else
-  #     respond_with @domain.errors, :status => unprocessable_entity
-  #   end
-  # end
-  # 
-  # def destroy
-  #   @domain = current_user.domains.find(params[:id])
-  #   @domain.destroy
-  #   head :ok
-  # end
-  # 
-  # def publish
-  #   @domain = current_user.domains.find(params[:id])
-  #   @domain.publish!
-  #   respond_with(@domain)
-  # end
+  def update
+    @record = @domain.records.find(params[:id])
+    if @record.update_attributes(params[:record])
+      head :ok
+    else
+      respond_with @record.errors, :status => unprocessable_entity
+    end
+  end
+  
+  def destroy
+    @record = @domain.records.find(params[:id])
+    @record.destroy
+    head :ok
+  end
 
 end

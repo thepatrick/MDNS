@@ -3,6 +3,14 @@ class Domain < ActiveRecord::Base
   belongs_to :user
   has_many :records
   
+  def before_validation_on_create
+    self.default_ttl = 1.hour
+    self.serial = 1
+    self.expire = 24.hours
+    self.retry = 10.minutes 
+    self.refresh = 1.hour
+  end
+  
   def bump_version
     today = Time.now.to_date
     if self.updated_at.to_date == today
