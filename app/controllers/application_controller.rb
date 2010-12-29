@@ -33,6 +33,13 @@ class ApplicationController < ActionController::Base
       end
     end
     
+    def require_admin
+      unless current_user && current_user.admin?
+        redirect_to '/'
+        return false
+      end
+    end
+    
     def store_location
       session[:return_to] = request.request_uri
     end

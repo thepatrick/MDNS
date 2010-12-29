@@ -1,0 +1,18 @@
+<h2>Admin Tools:</h2>
+
+<table style="width: 100%">
+	<tr>
+		<th>Domain</th>
+		<th>Active</th>
+		<th>User</th>
+		<th>&nbsp;</th>
+	</tr>
+	<% @domains.each do |domain| -%>
+		<tr>
+			<td colspan=""><%= domain.fqdn %></td>
+			<td colspan=""><%= link_to domain.active? ? "Yes": "No", admin_domain_toggle_path(domain), :method => :put %></td>
+			<td colspan=""><%= domain.user.email %></td>
+			<td colspan=""><%= link_to "Delete", admin_domain_path(domain), :method => :delete %></td>
+		</tr>
+	<% end -%>
+</table>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101227140113) do
+ActiveRecord::Schema.define(:version => 20101229113454) do
 
   create_table "domains", :force => true do |t|
     t.integer  "user_id",                         :null => false
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(:version => 20101227140113) do
     t.string   "last_login_ip"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "admin"
   end
 
 end
