@@ -7,6 +7,8 @@ MDNS::Application.routes.draw do
       get 'logout', :action => 'destroy'
     end
     resource :account, :controller => 'users', :path_names => { :new => 'register' }, :except => :destroy
+    
+    get '/oauth/(:action)(/(:id))', :controller => 'oauth'
   end
   
   scope "/rw" do

@@ -1,6 +1,7 @@
 class DomainsController < ApplicationController
   
-  before_filter :require_user
+  before_filter :login_or_oauth_required
+  
   respond_to :json
   respond_to :text, :only => :show
   def index

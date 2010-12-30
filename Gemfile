@@ -26,6 +26,10 @@ gem 'zonefile'
 
 gem 'authlogic'
 
+gem 'rainbows'
+
+gem "oauth-plugin", ">=0.4.0.pre1"
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

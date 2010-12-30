@@ -1,6 +1,7 @@
 class RecordsController < ApplicationController
   
-  before_filter :require_user
+  before_filter :login_or_oauth_required
+  
   respond_to :json
   
   before_filter :get_domain
