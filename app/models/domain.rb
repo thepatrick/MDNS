@@ -15,6 +15,7 @@ class Domain < ActiveRecord::Base
     self.expire = 24.hours
     self.retry = 10.minutes 
     self.refresh = 1.hour
+    self.servers << Server.all # by default add all servers
   end
   
   def bump_version
@@ -69,6 +70,10 @@ class Domain < ActiveRecord::Base
       zf.txt << r.to_zone
     end
     self.zone_file = zf.output
+  end
+  
+  def as_json(options = {})
+    super((options || {}).merge({ :include => {:servers => { :only => [:ip, :identifier] }} }))    
   end
   
 end
