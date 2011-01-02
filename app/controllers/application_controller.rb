@@ -4,10 +4,6 @@ class ApplicationController < ActionController::Base
   helper :all
   helper_method :current_user_session, :current_user
   
-  def logged_in?
-    not current_user.nil?
-  end
-  
   private
   
     def user_from_token
