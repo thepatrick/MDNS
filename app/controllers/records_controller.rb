@@ -1,6 +1,8 @@
 class RecordsController < ApplicationController
   
+  before_filter :user_from_token
   before_filter :require_user
+  
   respond_to :json
   
   before_filter :get_domain

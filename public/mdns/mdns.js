@@ -200,9 +200,9 @@ var dxClient = {
 		publish: function() {
 			$('loading').show();
 			domain = this.selectedDomain;
-			dxClient.apiCall('domain.publish',{
+			dxClient.apiCall('rw/domains/' + domain.id + '/publish',{
 				method: 'post',
-				parameters: {'id': domain.id},
+				parameters: {'_method': 'post'},
 				onApiSuccess: function(r, t) {
 					domain.version = r.version;
 					$('edit-domain-detail-version').update(this.selectedDomain.version);

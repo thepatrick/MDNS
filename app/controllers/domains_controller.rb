@@ -1,8 +1,10 @@
 class DomainsController < ApplicationController
-  
+
+  before_filter :user_from_token
   before_filter :require_user
   respond_to :json
   respond_to :text, :only => :show
+
   def index
     respond_with(@domains = current_user.domains.all)
   end
@@ -45,6 +47,7 @@ class DomainsController < ApplicationController
   def publish
     @domain = current_user.domains.find(params[:id])
     @domain.publish!
+    # send out message!
     respond_with(@domain)
   end
 

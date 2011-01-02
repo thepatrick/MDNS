@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'daemons'
+
+LAUNCH_FILE = File.expand_path(__FILE__)
+
+opts = {
+  :dir_mode => :normal,
+  :dir => File.expand_path('../../tmp/pids', LAUNCH_FILE),
+  :monitor => true
+}
+
+Daemons.run_proc('websockets-sever', opts) do
+
+  # Get rails going
+  APP_PATH = File.expand_path('../../config/application',  LAUNCH_FILE)
+  require File.expand_path('../../config/boot',  LAUNCH_FILE)
+  
+  # Trick rails into thinking this is rails runner process
+  ARGV.slice!(0...ARGV.index('--')) if ARGV.index('--')
+  ARGV.unshift File.expand_path('../../lib/websockets-server/server.rb', LAUNCH_FILE)
+  ARGV.unshift 'runner'
+  require 'rails/commands'
+  
+end
+

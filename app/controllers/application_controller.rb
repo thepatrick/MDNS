@@ -5,6 +5,12 @@ class ApplicationController < ActionController::Base
   helper_method :current_user_session, :current_user
   
   private
+  
+    def user_from_token
+      token = request.env['HTTP_X_MDNS_TOKEN']
+      @current_user = User.where(:single_access_token => token).first unless token.nil?
+    end
+  
     def current_user_session
       return @current_user_session if defined?(@current_user_session)
       @current_user_session = UserSession.find
