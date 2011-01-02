@@ -10,21 +10,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110101093315) do
+ActiveRecord::Schema.define(:version => 20110102055634) do
 
-  create_table "client_applications", :force => true do |t|
-    t.string   "name"
-    t.string   "url"
-    t.string   "support_url"
-    t.string   "callback_url"
-    t.string   "key",          :limit => 40
-    t.string   "secret",       :limit => 40
-    t.integer  "user_id"
+  create_table "domain_server_connections", :force => true do |t|
+    t.integer  "domain_id"
+    t.integer  "server_id"
+    t.boolean  "active"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  add_index "client_applications", ["key"], :name => "index_client_applications_on_key", :unique => true
 
   create_table "domains", :force => true do |t|
     t.integer  "user_id",                         :null => false
@@ -49,6 +43,13 @@ ActiveRecord::Schema.define(:version => 20110101093315) do
     t.integer  "weight"
     t.integer  "port"
     t.string   "target"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "server_messages", :force => true do |t|
+    t.integer  "server_id"
+    t.string   "message"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

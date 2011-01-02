@@ -37,17 +37,19 @@ EventMachine::run do
       server_sessions[ws.session_id] = ServerSession.new
       
       # setup sender on a periodic timer
-      # ws.sending_timer = EventMachine::PeriodicTimer.new(0.5) do
-      #   server = session.reload.server
-      #   server && ServerQueuedMessage.for(server).each do |queued_message|
-      #     ws.send "~m~#{queued_message.message_json.length + 3}~m~~j~#{queued_message.message_json}"
-      #     queued_message.delete
-      #   end
-      # end
+      ws.sending_timer = EventMachine::PeriodicTimer.new(5) do
+        session = server_sessions[ws.session_id]
+        if session && (Time.now - session.last_heartbeat) > 11.seconds
+          ws.close
+        else
+          ws.send ['HEARTBEAT'].to_json          
+        end
+      end
       
     end
     
     ws.onclose do
+      puts "Closing " + ws.session_id
       ws.sending_timer && ws.sending_timer.cancel
       active_connections -= 1
       server_sessions[ws.session_id] = nil
@@ -55,9 +57,8 @@ EventMachine::run do
     
     # Extract, decode and handle incoming messages
     ws.onmessage do |chunks|
-      puts chunks
       session = server_sessions[ws.session_id]
-      session && session.message(message) do |response|
+      session && session.message(chunks) do |response|
        jsond = response.to_json
        ws.send jsond
       end

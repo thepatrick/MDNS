@@ -1,21 +1,25 @@
 class Server < ActiveRecord::Base
   
+  has_many :domain_server_connections
+  has_many :domains, :through => :domain_server_connections, :conditions => { :active => true }
+  has_many :server_messages
+  
+  before_validation_on_create :default_key
+  
   def message(message)
-    yield ['OK']
-    # if message =~ /^CONNECT (.*) (.*)/
-    #   if @server = Server.where(:identifier => $1, :key => $2).first
-    #     yield ['OK', { :message => "Authetnicated" }]
-    #   else
-    #     update_attribute :server_id, nil
-    #     yield ['FAIL', {:message => "Server details not recognised"}]
-    #   end
-    # else
-    #   yield ['ERR']
-    # end
+    if message =~ /^GETDOMAINS/
+      yield ['DOMAINS', domains.active.all]
+    else
+      yield ['ERR']
+    end
   end
   
-  def before_validation_on_create
+  def default_key
     self.key = Authlogic::Random.hex_token
+  end
+  
+  def push_message(msg)
+    server_messages.create :message => msg.to_json
   end
   
 end

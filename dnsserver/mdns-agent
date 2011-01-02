@@ -1,0 +1,195 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'daemons'
+require 'eventmachine'
+require 'em-http-request'
+require 'json'
+require 'yaml'
+
+CONFIG_FILE_PATH = File.expand_path("~/Desktop/mdns/mdns.yml")
+
+CONFIG = {
+  :pid => File.expand_path('.'),
+  :master => '127.0.0.1',
+  :master_port => 8081,
+  :reload_bind => '/usr/sbin/rndc reload',
+  :zone_folder => '/etc/bind/zones',
+  :bind_config_file => '/etc/bind/named.conf.mdns'
+}.merge(File.exist?(CONFIG_FILE_PATH) ? YAML.load(File.read(CONFIG_FILE_PATH)) : {})
+
+class MDNSAgent
+  
+  attr_accessor :master
+  attr_accessor :master_port
+  attr_accessor :identifier
+  attr_accessor :key
+  attr_accessor :config_file
+  attr_accessor :zone_folder
+  attr_accessor :restart_bind_command
+  
+  def log_msg(msg)
+    puts Time.now.to_s + ": " + msg 
+  end
+  
+  def initialize(master, identifier, key, master_port = 8081)
+    @master = master
+    @identifier = identifier
+    @key = key
+    @master_port = master_port
+    @connected = false
+    @delay = 5
+  end
+  
+  def start
+    # try connecting
+    kick_start
+    @connection_test = EventMachine::PeriodicTimer.new(@delay) do
+      if @connected
+        @connection_test.cancel if @connection_test
+        @connection_test = nil
+      else
+        @delay = @delay * 2 if @delay < 60
+        @delay = 60 if @delay > 60
+        @connection_test.interval = @delay
+        give_up false # just clean things up, just in case
+        kick_start    # try connecting again
+      end
+    end
+    # then wait 5 seconds to see if we connected, if not, give_up and try again. 
+    # if still not successful, double time, unless time > 1 minute, then stick to that
+    
+  end
+  
+  def kick_start
+    @http = EventMachine::HttpRequest.new("ws://" + @master + ":" + @master_port.to_s + "/").get :timeout => 0
+    @http.errback { 
+      log_msg "Connection to master at " + @master + " on port " + @master_port.to_s + " failed."
+    }
+    @http.callback {
+      log_msg "Connected."
+      @connected = true
+      authenticate
+    }
+    @http.stream { |msg|
+      handle_msg(msg)
+    }    
+  end
+  
+  def give_up(and_try_again = true)
+    @connected = false
+    @http.close(true)
+    @heartbeat_timer.cancel if @heartbeat_timer
+    start if and_try_again
+  end
+  
+  def authenticate
+    @http.send("CONNECT #{ @identifier } #{ @key }")
+    setup_heartbeat
+    update_domains
+  end
+  
+  def setup_heartbeat
+    @last_heartbeat = Time.now
+    @heartbeat_timer = EventMachine::PeriodicTimer.new(5) do
+      if (Time.now - @last_heartbeat) > 15
+        log_msg "Lost master."
+        give_up
+      end
+    end
+  end
+  
+  def handle_msg(original_msg)
+    msg = JSON.parse(original_msg) rescue nil
+    if msg && self.respond_to?("message_" + msg[0].downcase)
+      self.send("message_" + msg[0].downcase, msg[1])
+    else
+      log_msg "Received unknown message: " + original_msg
+    end
+  end
+  
+  def message_heartbeat(j)
+    @http.send "PONG"
+    @last_heartbeat = Time.now
+  end
+  
+  def message_authok(j)
+    log_msg "Authenticated!"
+  end
+
+  def message_authfail(j)
+    log_msg j["message"]
+    give_up
+  end
+  
+  def update_domains
+    @http.send "GETDOMAINS"
+  end
+  
+  def message_domains(j)
+    log_msg "Updating domains..."
+    @domains = j
+    # ... write zone files for each domain
+    write_zone_files
+    # ... write config file
+    write_config_file
+    # ... reload bind
+    reload_bind
+  end
+  
+  def write_zone_files
+    log_msg "Writing zone files..."
+    @domains.each do |domain|
+      puts domain.inspect
+      file = File.expand_path(domain['fqdn'] + '.mdns-zone', @zone_folder)
+      log_msg "... write zone " + domain['fqdn'] + " in to file " + file
+      File.open(file, 'w') { |p| p << domain['zone_file'] }
+    end
+  end
+  
+  def write_config_file
+    log_msg "Writing config files..."
+    File.open(@config_file, "w") do |f|
+      @domains.each do |domain|
+        f << %Q{
+zone "#{ domain["fqdn"] }" {
+  type master;
+  file "#{ File.expand_path(domain['fqdn'] + '.mdns-zone', @zone_folder) }";
+  allow-update { none; };  
+}
+        }
+      end
+    end
+  end
+  
+  def reload_bind
+    log_msg "Reloading BIND..."
+    
+    `#{ @restart_bind_command }`
+  end
+  
+  def message_push(j)
+    if j['kind'] == 'DOMAINPUSH'
+      update_domains
+    else
+      log_msg "PUSH message: " + j.inspect
+    end
+  end
+  
+end
+
+opts = {
+  :dir_mode => :normal,
+  :monitor => true,
+  :dir => CONFIG[:pid]
+}
+
+Daemons.run_proc('mdns-agent', opts) do
+  EventMachine.run {
+    agent = MDNSAgent.new CONFIG[:master], CONFIG[:identifier], CONFIG[:key], CONFIG[:master_port]
+    agent.zone_folder = CONFIG[:zone_folder]
+    agent.config_file = CONFIG[:bind_config_file]
+    agent.restart_bind_command = CONFIG[:reload_bind]
+    agent.start
+  }  
+end

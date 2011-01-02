@@ -346,9 +346,9 @@ var dxClient = {
 			this.kill();
 			$('loading').show();
 			
-			dxClient.apiCall('domain.create', {
+			dxClient.apiCall('rw/domains', {
 				method: 'post',
-				parameters: {fqdn: dom_to},
+				parameters: { "domain[fqdn]": dom_to},
 				onApiSuccess: function(r, t) {
 					
 					$('loading').hide();

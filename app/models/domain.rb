@@ -2,10 +2,16 @@ class Domain < ActiveRecord::Base
   
   belongs_to :user
   has_many :records
+  has_many :domain_server_connections
+  has_many :servers, :through => :domain_server_connections, :conditions => { :active => true }
   
-  def before_validation_on_create
+  scope :active, where(:active => true).where('zone_file IS NOT NULL')
+  
+  before_validation_on_create :set_deafults
+  
+  def set_deafults
     self.default_ttl = 1.hour
-    self.serial = 1
+    self.version = 1
     self.expire = 24.hours
     self.retry = 10.minutes 
     self.refresh = 1.hour
@@ -25,6 +31,7 @@ class Domain < ActiveRecord::Base
     bump_version
     populate_zone_file
     save!
+    servers.map { |s| s.push_message(:kind => 'DOMAINPUSH', :domain => id); }
   end
   
   def populate_zone_file
